@@ -1,0 +1,81 @@
+[metadata]
+name = 数字计算器
+author = zhdezs
+version = 1.0.0
+description = 一个简单的数字计算工具
+category = 工具
+
+[code]
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLineEdit, 
+                             QPushButton, QGridLayout, QApplication)
+from PyQt5.QtCore import Qt
+
+class Calculator(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        
+    def initUI(self):
+        """初始化计算器UI界面
+        Initialize calculator UI
+        """
+        self.setWindowTitle('数字计算器')
+        self.setFixedSize(300, 400)
+        
+        # 主布局
+        main_layout = QVBoxLayout()
+        
+        # 显示屏
+        self.display = QLineEdit()
+        self.display.setAlignment(Qt.AlignRight)
+        self.display.setReadOnly(True)
+        self.display.setStyleSheet('font-size: 24px;')
+        main_layout.addWidget(self.display)
+        
+        # 按钮网格
+        grid = QGridLayout()
+        buttons = [
+            '7', '8', '9', '/',
+            '4', '5', '6', '*',
+            '1', '2', '3', '-',
+            '0', '.', '=', '+'
+        ]
+        
+        for i, text in enumerate(buttons):
+            btn = QPushButton(text)
+            btn.setStyleSheet('font-size: 18px;')
+            btn.clicked.connect(self.on_button_click)
+            grid.addWidget(btn, i // 4, i % 4)
+        
+        main_layout.addLayout(grid)
+        self.setLayout(main_layout)
+    
+    def on_button_click(self):
+        """处理按钮点击事件
+        Handle button click events
+        """
+        sender = self.sender()
+        text = sender.text()
+        
+        if text == '=':
+            try:
+                result = str(eval(self.display.text()))
+                self.display.setText(result)
+            except:
+                self.display.setText('Error')
+        else:
+            self.display.setText(self.display.text() + text)
+
+def main():
+    """插件入口函数
+    Plugin entry function
+    """
+    import sys
+    app = QApplication.instance() or QApplication(sys.argv)
+    calc = Calculator()
+    calc.show()
+    
+    # 如果是新创建的QApplication实例，则启动事件循环
+    if not QApplication.instance():
+        sys.exit(app.exec_())
+    return calc
